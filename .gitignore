@@ -44,16 +44,7 @@ env/
 .DS_Store
 Thumbs.db
 
-# Data files
-*.csv
-*.xlsx
-*.xls
-data/
-datasets/
 
-# Jupyter Notebook
-.ipynb_checkpoints/
-*.ipynb
 
 # Environment variables
 .env
