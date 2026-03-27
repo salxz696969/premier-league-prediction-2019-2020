@@ -13,7 +13,7 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.tree import DecisionTreeClassifier
 
 # Add project root to path
-project_root = Path(__file__).resolve().parent.parent
+project_root = Path(__file__).resolve().parent.parent.parent
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
@@ -60,7 +60,7 @@ def build_pipeline(
 
 def main() -> None:
     """Main pipeline: load data, engineer features, train decision tree model."""
-    data_root = Path(__file__).resolve().parent.parent / "data"
+    data_root = project_root / "data"
     df = load_engineered_dataset(data_root)
     numeric_cols, cat_cols, all_feat_cols = select_feature_columns(df)
     X_train, y_train, X_val, y_val, X_test, y_test = split_features_and_target(

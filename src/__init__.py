@@ -13,7 +13,6 @@ Predicts W / D / L using:
     - Home advantage           : h / a flag
 """
 
-from .random_forest import main
 from .config.config import (
     TEAM_ALIASES,
     COMP_WEIGHTS,
@@ -23,7 +22,6 @@ from .config.config import (
 )
 
 __all__ = [
-    "random_forest",
     "TEAM_ALIASES",
     "COMP_WEIGHTS",
     "TEAM_BOOST_OVERRIDES",
