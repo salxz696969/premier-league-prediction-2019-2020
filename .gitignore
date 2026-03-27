@@ -57,6 +57,5 @@ logs/
 # Models and outputs
 *.pkl
 *.joblib
-models/
 output/
 results/
