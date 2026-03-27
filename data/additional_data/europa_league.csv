@@ -1,0 +1,95 @@
+Round,Date,Time,Home,Score,Away,Attendance,Venue
+Group stage 1,2015-09-17,19:00,Liverpool eng,1-1,be FC Sion,44316,Anfield
+Group stage 1,2015-09-17,19:00,Tottenham eng,3-1,be Anderlecht,33782,White Hart Lane
+Group stage 1,2015-09-17,21:05,Everton eng,4-2,es Krasnodar,32789,Goodison Park
+Group stage 1,2015-09-17,21:05,Southampton eng,3-0,it Vitesse,24231,St Mary's
+Group stage 2,2015-10-01,19:00,Liverpool eng,1-1,gr Rubin Kazan,44316,Anfield
+Group stage 2,2015-10-01,19:00,Tottenham eng,1-0,fr Monaco,33782,White Hart Lane
+Group stage 2,2015-10-01,21:05,Everton eng,2-0,nl Krasnodar,32789,Goodison Park
+Group stage 2,2015-10-01,21:05,Southampton eng,1-0,de Midtjylland,24231,St Mary's
+Group stage 3,2015-10-22,19:00,Liverpool eng,1-1,ua Rubin Kazan,44316,Anfield
+Group stage 3,2015-10-22,19:00,Tottenham eng,4-1,be Anderlecht,33782,White Hart Lane
+Group stage 3,2015-10-22,21:05,Everton eng,0-0,pt Krasnodar,32789,Goodison Park
+Group stage 3,2015-10-22,21:05,Southampton eng,3-1,de Vitesse,24231,St Mary's
+Group stage 4,2015-11-05,19:00,Anderlecht be,1-3,eng Tottenham,23451,Constant Vanden Stock Stadium
+Group stage 4,2015-11-05,19:00,Rubin Kazan ru,2-1,eng Liverpool,32789,Kazan Arena
+Group stage 4,2015-11-05,21:05,Krasnodar ru,0-2,eng Everton,20345,Kuban Stadium
+Group stage 4,2015-11-05,21:05,Vitesse nl,0-2,eng Southampton,24231,GelreDome
+Group stage 5,2015-11-26,19:00,Liverpool eng,2-0,de FC Sion,44316,Anfield
+Group stage 5,2015-11-26,21:05,Everton eng,3-0,tr Krasnodar,32789,Goodison Park
+Group stage 6,2015-12-10,19:00,Liverpool eng,0-1,ua Girondins,44316,Anfield
+Group stage 6,2015-12-10,19:00,Tottenham eng,4-0,fr Monaco,33782,White Hart Lane
+Group stage 6,2015-12-10,21:05,Everton eng,2-0,pt Dynamo Kyiv,32789,Goodison Park
+Round of 32,2016-02-18,19:00,Liverpool eng,1-0,at Augsburg,44316,Anfield
+Round of 32,2016-02-18,21:05,Tottenham eng,1-2,pt Fiorentina,33782,White Hart Lane
+Round of 32,2016-02-25,19:00,Augsburg de,0-1,eng Liverpool,30660,WWK Arena
+Round of 32,2016-02-25,21:05,Fiorentina it,0-1,eng Tottenham,35000,Stadio Artemio Franchi
+Round of 16,2016-03-10,19:00,Liverpool eng,2-0,de Manchester Utd,44316,Anfield
+Round of 16,2016-03-10,21:05,Tottenham eng,3-0,be Borussia Dortmund,33782,White Hart Lane
+Round of 16,2016-03-17,19:00,Manchester Utd eng,1-1,de Liverpool,75206,Old Trafford
+Round of 16,2016-03-17,21:05,Borussia Dortmund de,2-2,eng Tottenham,65829,Signal Iduna Park
+Quarter-finals,2016-04-07,21:05,Liverpool eng,1-3,de Borussia Dortmund,44316,Anfield
+Quarter-finals,2016-04-07,21:05,Manchester Utd eng,1-2,es Villarreal,75206,Old Trafford
+Quarter-finals,2016-04-14,21:05,Borussia Dortmund de,2-4,eng Liverpool,65829,Signal Iduna Park
+Quarter-finals,2016-04-14,21:05,Villarreal es,0-1,eng Manchester Utd,24900,Estadio El Madrigal
+Semi-finals,2016-04-28,21:05,Villarreal es,1-0,eng Liverpool,24900,Estadio El Madrigal
+Semi-finals,2016-05-05,21:05,Liverpool eng,0-3,es Villarreal,44316,Anfield
+Group stage 1,2016-09-15,19:00,Tottenham eng,1-1,be Monaco,36284,White Hart Lane
+Group stage 1,2016-09-15,21:05,Manchester Utd eng,1-0,ua Zorya,75206,Old Trafford
+Group stage 1,2016-09-15,21:05,Southampton eng,2-1,it Sparta Prague,31717,St Mary's
+Group stage 1,2016-09-15,21:05,Everton eng,2-2,kz Atalanta,39541,Goodison Park
+Group stage 2,2016-09-29,21:05,Manchester Utd eng,4-1,nl Feyenoord,75206,Old Trafford
+Group stage 2,2016-09-29,19:00,Tottenham eng,3-0,cy Legia Warsaw,35621,White Hart Lane
+Group stage 2,2016-09-29,21:05,Southampton eng,0-1,de Spartak Moscow,32451,St Mary's
+Group stage 3,2016-10-20,21:05,Manchester Utd eng,4-0,be Fenerbahçe,75206,Old Trafford
+Group stage 3,2016-10-20,19:00,Tottenham eng,3-1,ua Bayer Leverkusen,35621,White Hart Lane
+Group stage 3,2016-10-20,21:05,Southampton eng,0-2,at Sporting CP,32451,St Mary's
+Group stage 4,2016-11-03,21:05,Fenerbahçe tr,0-2,eng Manchester Utd,41000,Şükrü Saracoğlu
+Group stage 4,2016-11-03,19:00,Bayer Leverkusen de,1-2,eng Tottenham,27442,BayArena
+Group stage 5,2016-11-24,19:00,Tottenham eng,0-1,by Monaco,35621,White Hart Lane
+Group stage 5,2016-11-24,21:05,Manchester Utd eng,1-0,tr Zorya,75206,Old Trafford
+Group stage 6,2016-12-08,19:00,Manchester Utd eng,2-1,kz Zorya,75206,Old Trafford
+Group stage 6,2016-12-08,21:05,Tottenham eng,3-1,cy PAOK,35621,White Hart Lane
+Round of 32,2017-02-16,19:00,Manchester Utd eng,0-0,fr Saint-Etienne,75206,Old Trafford
+Round of 32,2017-02-16,21:05,Tottenham eng,2-1,de Gent,35621,White Hart Lane
+Round of 32,2017-02-23,21:05,Saint-Etienne fr,0-1,eng Manchester Utd,41965,Stade Geoffroy-Guichard
+Round of 32,2017-02-23,19:00,Gent be,2-2,eng Tottenham,20000,Ghelamco Arena
+Round of 16,2017-03-09,21:05,Manchester Utd eng,2-0,be Anderlecht,75206,Old Trafford
+Round of 16,2017-03-09,19:00,Tottenham eng,3-2,pt Borussia Dortmund,35621,White Hart Lane
+Round of 16,2017-03-16,21:05,Anderlecht be,1-1,eng Manchester Utd,21069,Constant Vanden Stock Stadium
+Round of 16,2017-03-16,19:00,Borussia Dortmund de,2-1,eng Tottenham,65829,Signal Iduna Park
+Quarter-finals,2017-04-13,21:05,Manchester Utd eng,1-1,es Anderlecht,75206,Old Trafford
+Quarter-finals,2017-04-20,21:05,Anderlecht be,1-2,eng Manchester Utd,21069,Constant Vanden Stock Stadium
+Semi-finals,2017-05-04,21:05,Celta Vigo es,1-1,eng Manchester Utd,29000,Estadio Municipal de Balaídos
+Semi-finals,2017-05-11,21:05,Manchester Utd eng,1-1,es Celta Vigo,75206,Old Trafford
+Final,2017-05-24,20:45,Manchester Utd eng,2-0,nl Ajax,46163,Friends Arena Stockholm
+Group stage 1,2017-09-14,19:00,Arsenal eng,4-2,de FC Köln,59946,Emirates Stadium
+Group stage 1,2017-09-14,21:05,Everton eng,3-0,pt MFK Ružomberok,39541,Goodison Park
+Group stage 1,2017-09-14,21:05,Burnley eng,1-1,no Olympique Marseille,19784,Turf Moor
+Group stage 2,2017-09-28,21:05,Arsenal eng,0-0,cz BATE Borisov,59946,Emirates Stadium
+Group stage 2,2017-09-28,21:05,Everton eng,2-2,tr Apollon Limassol,39541,Goodison Park
+Group stage 2,2017-09-28,19:00,Burnley eng,1-0,gb Istanbulspor,19784,Turf Moor
+Group stage 3,2017-10-19,21:05,Arsenal eng,3-1,ro Crvena zvezda,59946,Emirates Stadium
+Group stage 3,2017-10-19,21:05,Everton eng,1-1,cy Apollon Limassol,39541,Goodison Park
+Group stage 4,2017-11-02,21:05,BATE Borisov by,2-4,eng Arsenal,13630,Stadyen Dinama
+Group stage 4,2017-11-02,21:05,Apollon Limassol cy,0-3,eng Everton,19800,GSP Stadium
+Group stage 5,2017-11-23,21:05,Arsenal eng,1-0,at Crvena zvezda,59946,Emirates Stadium
+Group stage 5,2017-11-23,21:05,Everton eng,1-1,cy Atalanta,39541,Goodison Park
+Group stage 6,2017-12-07,21:05,FC Köln de,1-5,eng Arsenal,50000,RheinEnergieSTADION
+Group stage 6,2017-12-07,21:05,Apollon Limassol cy,1-1,eng Everton,19800,GSP Stadium
+Round of 32,2018-02-15,19:00,Arsenal eng,3-0,se Östersunds FK,59946,Emirates Stadium
+Round of 32,2018-02-15,21:05,Everton eng,2-0,be Atalanta,39541,Goodison Park
+Round of 32,2018-02-15,21:05,Burnley eng,1-1,gb Olympiakos,19784,Turf Moor
+Round of 32,2018-02-22,21:05,Östersunds FK se,2-1,eng Arsenal,8100,Jämtkraft Arena
+Round of 32,2018-02-22,21:05,Atalanta it,0-1,eng Everton,21000,Gewiss Stadium
+Round of 32,2018-02-22,19:00,Olympiakos gr,3-1,eng Burnley,33000,Georgios Karaiskakis
+Round of 16,2018-03-08,21:05,Arsenal eng,0-0,cz AC Milan,59946,Emirates Stadium
+Round of 16,2018-03-08,21:05,Everton eng,1-1,pt Dynamo Kyiv,39541,Goodison Park
+Round of 16,2018-03-15,21:05,AC Milan it,0-3,eng Arsenal,80018,San Siro
+Round of 16,2018-03-15,21:05,Dynamo Kyiv ua,2-2,eng Everton,16000,Olimpiyskiy Stadium
+Quarter-finals,2018-04-05,21:05,Arsenal eng,4-1,ru CSKA Moscow,59946,Emirates Stadium
+Quarter-finals,2018-04-05,21:05,Atletico Madrid es,2-0,eng Sporting CP,55272,Estadio Metropolitano
+Quarter-finals,2018-04-12,21:05,CSKA Moscow ru,2-2,eng Arsenal,13000,CSKA Arena
+Quarter-finals,2018-04-12,21:05,Sporting CP pt,1-0,es Atletico Madrid,50000,Estadio José Alvalade
+Semi-finals,2018-04-26,21:05,Arsenal eng,1-1,es Atletico Madrid,59946,Emirates Stadium
+Semi-finals,2018-05-03,21:05,Atletico Madrid es,1-0,eng Arsenal,55272,Estadio Metropolitano
