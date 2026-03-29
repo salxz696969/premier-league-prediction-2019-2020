@@ -22,6 +22,112 @@ from .style_calculations import (
 )
 
 
+DEFAULT_POSSESSION_PCT = 50.0
+DEFAULT_PPDA = 6.0
+
+
+def _row_numeric(row: pd.Series, key: str, default: float = np.nan) -> float:
+    """Safely read a numeric value from a row, falling back to `default`."""
+    value = pd.to_numeric(pd.Series([row.get(key, default)]), errors="coerce").iloc[0]
+    if pd.isna(value):
+        return default
+    return float(value)
+
+
+def _style_weighted_context_values(row: pd.Series, team_style: dict) -> dict[str, float]:
+    """Compute style-weighted context metrics for one match row."""
+    weights = calculate_style_weighted_context(row, team_style)
+
+    possession = _row_numeric(row, "Possession")
+    sca = _row_numeric(row, "Shot_Creating_Actions")
+    dribbles = _row_numeric(row, "Successful_Dribbles")
+    final_third_entries = _row_numeric(row, "Final_Third_Entries")
+
+    return {
+        "Possession_Style_Weighted": (
+            possession * weights.get("Possession", 1.0)
+            if pd.notna(possession)
+            else np.nan
+        ),
+        "SCA_Style_Weighted": (
+            sca * weights.get("Shot_Creating_Actions", 1.0) if pd.notna(sca) else np.nan
+        ),
+        "Dribbles_Style_Weighted": (
+            dribbles * weights.get("Successful_Dribbles", 1.0)
+            if pd.notna(dribbles)
+            else np.nan
+        ),
+        "Final_Third_Style_Weighted": (
+            final_third_entries * weights.get("Final_Third_Entries", 1.0)
+            if pd.notna(final_third_entries)
+            else np.nan
+        ),
+        "Possession_Style_Delta": (
+            possession - float(team_style.get("possession_pct", DEFAULT_POSSESSION_PCT))
+            if pd.notna(possession)
+            else np.nan
+        ),
+    }
+
+
+def _style_adjusted_rolling_values(
+    row: pd.Series, team_style: dict, rolling_window: int
+) -> dict[str, float]:
+    """Adjust rolling xG/xGA based on expected values from team style."""
+    rolling_xg = _row_numeric(row, f"rolling_xG_{rolling_window}")
+    rolling_xga = _row_numeric(row, f"rolling_xGA_{rolling_window}")
+
+    xg_expectation = style_xg_expectation(team_style)
+    xga_expectation = style_defense_expectation(team_style)
+
+    xg_adjusted = (
+        rolling_xg / max(xg_expectation, 1e-6) if pd.notna(rolling_xg) else np.nan
+    )
+    xga_adjusted = rolling_xga * xga_expectation if pd.notna(rolling_xga) else np.nan
+
+    return {
+        "rolling_xG_style_adj": xg_adjusted,
+        "rolling_xGA_style_adj": xga_adjusted,
+        "xG_diff": (
+            xg_adjusted - xga_adjusted
+            if pd.notna(xg_adjusted) and pd.notna(xga_adjusted)
+            else np.nan
+        ),
+    }
+
+
+def _referee_style_impact_for_row(row: pd.Series) -> float:
+    """Estimate how referee bias may interact with pressing/aggression style."""
+    is_home = str(row.get("home_advantage", "a")).lower() == "h"
+    foul_col = "Home_Fouls" if is_home else "Away_Fouls"
+
+    team_fouls = _row_numeric(row, foul_col, default=0.0)
+    ppda_value = _row_numeric(row, "PPDA", default=DEFAULT_PPDA)
+    referee_bias = _row_numeric(row, "Referee_Bias_Score", default=0.0)
+
+    aggression = team_fouls + max(0.0, 8.0 - ppda_value)
+    return referee_bias * (1.0 + aggression / 10.0)
+
+
+def _momentum_features_for_row(
+    row: pd.Series,
+    rolling_window: int,
+    recent_form: dict,
+    opponent_strength: float,
+) -> dict[str, float]:
+    """Create compact momentum/interaction features for one match row."""
+    rolling_points = _row_numeric(row, f"rolling_win_rate_{rolling_window}")
+    if pd.notna(rolling_points):
+        rolling_points *= 3.0
+    else:
+        rolling_points = recent_form["points_per_game"] * 3.0
+
+    return {
+        "form_vs_strength": recent_form["points_per_game"] * opponent_strength,
+        "momentum": rolling_points + recent_form["streak"],
+    }
+
+
 def build_style_aware_rolling_features(df: pd.DataFrame) -> pd.DataFrame:
     """Build rolling features with style-aware interpretation."""
     df = df.sort_values(["Team", "Date"]).copy()
@@ -55,19 +161,7 @@ def attach_style_engineered_features(df: pd.DataFrame) -> pd.DataFrame:
     """
     out = df.sort_values(["Date", "Team", "Opponent"]).copy()
     w = ROLLING_WINDOW
-
-    referee_style_impact = []
-    xg_diff = []
-    form_vs_strength = []
-    momentum = []
-
-    possession_style_weighted = []
-    sca_style_weighted = []
-    dribbles_style_weighted = []
-    final_third_style_weighted = []
-    possession_style_delta = []
-    rolling_xg_style_adj = []
-    rolling_xga_style_adj = []
+    feature_rows: list[dict[str, float]] = []
 
     for _, row in out.iterrows():
         current_date = row["Date"]
@@ -83,109 +177,24 @@ def attach_style_engineered_features(df: pd.DataFrame) -> pd.DataFrame:
         opp_strength = calculate_opponent_strength(history, opponent)
 
         _ = opponent_style_interaction(team_style, opp_style)
+        _ = estimate_squad_depth(history, team, window=15)
 
-        weights = calculate_style_weighted_context(row, team_style)
-
-        pos = pd.to_numeric(
-            pd.Series([row.get("Possession", np.nan)]), errors="coerce"
-        ).iloc[0]
-        sca = pd.to_numeric(
-            pd.Series([row.get("Shot_Creating_Actions", np.nan)]), errors="coerce"
-        ).iloc[0]
-        dri = pd.to_numeric(
-            pd.Series([row.get("Successful_Dribbles", np.nan)]), errors="coerce"
-        ).iloc[0]
-        fte = pd.to_numeric(
-            pd.Series([row.get("Final_Third_Entries", np.nan)]), errors="coerce"
-        ).iloc[0]
-
-        possession_style_weighted.append(
-            pos * weights.get("Possession", 1.0) if pd.notna(pos) else np.nan
-        )
-        sca_style_weighted.append(
-            sca * weights.get("Shot_Creating_Actions", 1.0) if pd.notna(sca) else np.nan
-        )
-        dribbles_style_weighted.append(
-            dri * weights.get("Successful_Dribbles", 1.0) if pd.notna(dri) else np.nan
-        )
-        final_third_style_weighted.append(
-            fte * weights.get("Final_Third_Entries", 1.0) if pd.notna(fte) else np.nan
-        )
-        possession_style_delta.append(
-            pos - float(team_style.get("possession_pct", 50.0))
-            if pd.notna(pos)
-            else np.nan
-        )
-
-        rolling_xg = pd.to_numeric(
-            pd.Series([row.get(f"rolling_xG_{w}", np.nan)]), errors="coerce"
-        ).iloc[0]
-        rolling_xga = pd.to_numeric(
-            pd.Series([row.get(f"rolling_xGA_{w}", np.nan)]), errors="coerce"
-        ).iloc[0]
-
-        xg_exp = style_xg_expectation(team_style)
-        xga_exp = style_defense_expectation(team_style)
-
-        xg_adj_val = rolling_xg / max(xg_exp, 1e-6) if pd.notna(rolling_xg) else np.nan
-        xga_adj_val = rolling_xga * xga_exp if pd.notna(rolling_xga) else np.nan
-        rolling_xg_style_adj.append(xg_adj_val)
-        rolling_xga_style_adj.append(xga_adj_val)
-
-        xg_diff.append(
-            (xg_adj_val - xga_adj_val)
-            if pd.notna(xg_adj_val) and pd.notna(xga_adj_val)
-            else np.nan
-        )
-
-        _depth = max(estimate_squad_depth(history, team, window=15), 0.10)
-
-        home_flag = str(row.get("home_advantage", "a")).lower() == "h"
-        team_fouls = (
-            row.get("Home_Fouls", np.nan)
-            if home_flag
-            else row.get("Away_Fouls", np.nan)
-        )
-        team_fouls = (
-            pd.to_numeric(pd.Series([team_fouls]), errors="coerce").fillna(0.0).iloc[0]
-        )
-        ppda_val = (
-            pd.to_numeric(pd.Series([row.get("PPDA", np.nan)]), errors="coerce")
-            .fillna(6.0)
-            .iloc[0]
-        )
-        aggression = team_fouls + max(0.0, 8.0 - ppda_val)
-        ref_bias = (
-            pd.to_numeric(
-                pd.Series([row.get("Referee_Bias_Score", 0.0)]), errors="coerce"
+        row_features: dict[str, float] = {}
+        row_features.update(_style_weighted_context_values(row, team_style))
+        row_features.update(_style_adjusted_rolling_values(row, team_style, w))
+        row_features.update(
+            _momentum_features_for_row(
+                row,
+                rolling_window=w,
+                recent_form=recent_form,
+                opponent_strength=opp_strength,
             )
-            .fillna(0.0)
-            .iloc[0]
         )
-        referee_style_impact.append(ref_bias * (1.0 + aggression / 10.0))
+        row_features["referee_style_impact"] = _referee_style_impact_for_row(row)
+        feature_rows.append(row_features)
 
-        rp = pd.to_numeric(
-            pd.Series([row.get(f"rolling_win_rate_{w}", np.nan)]), errors="coerce"
-        ).iloc[0]
-        rp = (rp * 3.0) if pd.notna(rp) else (recent_form["points_per_game"] * 3.0)
-
-        form_vs_strength.append(recent_form["points_per_game"] * opp_strength)
-        momentum.append(rp + recent_form["streak"])
-
-    out["Possession_Style_Weighted"] = possession_style_weighted
-    out["SCA_Style_Weighted"] = sca_style_weighted
-    out["Dribbles_Style_Weighted"] = dribbles_style_weighted
-    out["Final_Third_Style_Weighted"] = final_third_style_weighted
-    out["Possession_Style_Delta"] = possession_style_delta
-
-    out["rolling_xG_style_adj"] = rolling_xg_style_adj
-    out["rolling_xGA_style_adj"] = rolling_xga_style_adj
-
-    out["referee_style_impact"] = referee_style_impact
-
-    out["xG_diff"] = xg_diff
-    out["form_vs_strength"] = form_vs_strength
-    out["momentum"] = momentum
+    engineered = pd.DataFrame(feature_rows, index=out.index)
+    out = pd.concat([out, engineered], axis=1)
 
     log("Style engineered features attached")
     return out
@@ -257,6 +266,20 @@ def attach_dynamic_motivation(df: pd.DataFrame) -> pd.DataFrame:
     out = df.sort_values(["Date", "Team"]).copy()
     motivation_scores = []
 
+    def _position_component(team_pos: float) -> float:
+        """Map league position to a simple urgency/motivation value."""
+        if pd.isna(team_pos):
+            return 0.0
+        if team_pos == 1:
+            return 0.4
+        if team_pos <= 5:
+            return 0.25
+        if team_pos <= 8:
+            return 0.15
+        if team_pos >= 16:
+            return 0.5
+        return 0.0
+
     for _, row in out.iterrows():
         current_date = row["Date"]
         history = out[out["Date"] < current_date]
@@ -276,16 +299,7 @@ def attach_dynamic_motivation(df: pd.DataFrame) -> pd.DataFrame:
         form_score += 0.05 * max(form["streak"], -3)
 
         # League position context
-        position_score = 0.0
-        if pd.notna(team_pos):
-            if team_pos == 1:
-                position_score = 0.4
-            elif team_pos <= 5:
-                position_score = 0.25
-            elif team_pos <= 8:
-                position_score = 0.15
-            elif team_pos >= 16:
-                position_score = 0.5
+        position_score = _position_component(team_pos)
 
         # Opponent strength (style matters)
         opp_strength = calculate_opponent_strength(history, opp)

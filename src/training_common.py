@@ -31,40 +31,50 @@ from src.utils import (
 )
 
 
-def load_engineered_dataset(data_root: Path) -> pd.DataFrame:
-    """Load source CSV files and attach all engineered features."""
-    additional = data_root / "additional_data"
-
-    df = load_premier_league(data_root, additional)
-
-    df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
-    df["Result"] = df["Result"].astype(str).str.lower().str.strip()
-    df["Team"] = df["Team"].map(normalize_team)
-    df["Opponent"] = df["Opponent"].map(normalize_team)
-    df["xG"] = pd.to_numeric(df["xG"], errors="coerce")
-    df["xGA"] = pd.to_numeric(df["xGA"], errors="coerce")
-
-    # Temporary helper columns used by rolling builder
-    df["_scored"] = pd.to_numeric(col_or_nan(df, "Scored"), errors="coerce")
-    df["_conceded"] = pd.to_numeric(col_or_nan(df, "Conceded"), errors="coerce")
-    df["_win_val"] = df["Result"].map({"w": 1.0, "d": 0.5, "l": 0.0})
-    df["_ppda"] = pd.to_numeric(df.get("PPDA", pd.Series(dtype=float)), errors="coerce")
-    if "xpts" in df.columns:
-        df["_xpts"] = pd.to_numeric(df["xpts"], errors="coerce")
-
-    df["home_advantage"] = (
-        parse_home_away(df).replace({"home": "h", "away": "a"}).fillna("a")
+def _normalize_base_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Normalize core columns required by all downstream feature steps."""
+    out = df.copy()
+    out["Date"] = pd.to_datetime(out["Date"], errors="coerce")
+    out["Result"] = out["Result"].astype(str).str.lower().str.strip()
+    out["Team"] = out["Team"].map(normalize_team)
+    out["Opponent"] = out["Opponent"].map(normalize_team)
+    out["xG"] = pd.to_numeric(out["xG"], errors="coerce")
+    out["xGA"] = pd.to_numeric(out["xGA"], errors="coerce")
+    out["home_advantage"] = (
+        parse_home_away(out).replace({"home": "h", "away": "a"}).fillna("a")
     )
+    return out
 
-    df = df[
+
+def _add_rolling_helper_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Add temporary helper columns used by rolling feature functions."""
+    out = df.copy()
+    out["_scored"] = pd.to_numeric(col_or_nan(out, "Scored"), errors="coerce")
+    out["_conceded"] = pd.to_numeric(col_or_nan(out, "Conceded"), errors="coerce")
+    out["_win_val"] = out["Result"].map({"w": 1.0, "d": 0.5, "l": 0.0})
+    out["_ppda"] = pd.to_numeric(
+        out.get("PPDA", pd.Series(dtype=float)), errors="coerce"
+    )
+    if "xpts" in out.columns:
+        out["_xpts"] = pd.to_numeric(out["xpts"], errors="coerce")
+    return out
+
+
+def _filter_trainable_rows(df: pd.DataFrame) -> pd.DataFrame:
+    """Keep rows that have valid target and identifiers for training."""
+    filtered = df[
         df["Date"].notna()
         & df["Result"].isin(["w", "d", "l"])
         & df["Team"].notna()
         & df["Opponent"].notna()
     ].copy()
-    log(f"Rows after filtering: {len(df):,}")
+    log(f"Rows after filtering: {len(filtered):,}")
+    return filtered
 
-    comp_df = pd.concat(
+
+def _load_competition_events(data_root: Path) -> pd.DataFrame:
+    """Load non-league competitions used to estimate fatigue."""
+    return pd.concat(
         [
             load_competition_matches(data_root / "champion_league.csv", "ucl"),
             load_competition_matches(
@@ -78,20 +88,46 @@ def load_engineered_dataset(data_root: Path) -> pd.DataFrame:
         ],
         ignore_index=True,
     )
-    df = attach_fatigue(df, comp_df)
 
-    df = build_rolling_features(df)
-    df.drop(
+
+def _drop_rolling_helper_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Remove temporary helper columns to keep the training table clean."""
+    out = df.copy()
+    out.drop(
         columns=["_scored", "_conceded", "_win_val", "_ppda", "_xpts"],
         errors="ignore",
         inplace=True,
     )
+    return out
 
+
+def load_engineered_dataset(data_root: Path) -> pd.DataFrame:
+    """Load source CSV files and attach all engineered features."""
+    additional = data_root / "additional_data"
+
+    # 1) Load and normalize raw league data.
+    df = load_premier_league(data_root, additional)
+    df = _normalize_base_columns(df)
+
+    # 2) Add helper columns and remove invalid rows.
+    df = _add_rolling_helper_columns(df)
+    df = _filter_trainable_rows(df)
+
+    # 3) Load auxiliary competitions and compute fatigue.
+    comp_df = _load_competition_events(data_root)
+    df = attach_fatigue(df, comp_df)
+
+    # 4) Build rolling form features, then clean helper columns.
+    df = build_rolling_features(df)
+    df = _drop_rolling_helper_columns(df)
+
+    # 5) Add table-position features.
     pos_map = load_position_map(data_root / "league_position_after20.csv")
     if not pos_map:
         log("Position features will be NaN (file missing or unreadable)")
     df = attach_position_features(df, pos_map)
 
+    # 6) Add interaction and style-aware features.
     df = attach_h2h_features(df)
     df, _ = attach_context_features(df)
     df = attach_referee_features(df)

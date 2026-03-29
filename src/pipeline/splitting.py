@@ -6,6 +6,14 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 
+def _validate_split_fractions(val_frac: float, test_frac: float) -> None:
+    """Validate split fractions and raise helpful errors for invalid inputs."""
+    if val_frac <= 0 or test_frac <= 0:
+        raise ValueError("val_frac and test_frac must both be > 0")
+    if val_frac + test_frac >= 1.0:
+        raise ValueError("val_frac + test_frac must be < 1.0")
+
+
 def make_match_group_id(df: pd.DataFrame) -> pd.Series:
     """Create a unique ID for each match (both home and away rows)."""
     t1 = df["Team"].str.lower().str.strip()
@@ -34,7 +42,15 @@ def stratified_group_split(
     test_frac: float = 0.10,
     random_state: int = 42,
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    """Split by match group so both rows of each match stay together."""
+    """
+    Split rows into train/validation/test using match-group stratification.
+
+    Why group-based split:
+    each real-world match appears as two rows (one per team). Grouping keeps
+    both rows in the same split to avoid information leakage.
+    """
+    _validate_split_fractions(val_frac, test_frac)
+
     df = df.copy()
     df["_match_gid"] = make_match_group_id(df)
 
@@ -51,6 +67,7 @@ def stratified_group_split(
         random_state=random_state,
         stratify=grp_labels["strat"],
     )
+    # Split temp into validation and test while preserving requested ratio.
     relative_test = test_frac / (val_frac + test_frac)
     g_val, g_test = train_test_split(
         g_temp,
@@ -59,9 +76,10 @@ def stratified_group_split(
         stratify=g_temp["strat"],
     )
 
-    def _select(group_ids):
+    def _select(match_group_ids: pd.Series) -> pd.DataFrame:
+        """Return shuffled rows for the provided set of match-group IDs."""
         return (
-            df[df["_match_gid"].isin(set(group_ids))]
+            df[df["_match_gid"].isin(set(match_group_ids))]
             .drop(columns=["_match_gid"])
             .sample(frac=1, random_state=random_state)
             .reset_index(drop=True)
