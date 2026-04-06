@@ -42,7 +42,7 @@ Each script loads `data/`, applies the full feature stack, fits the model, and p
 
 ## Notebooks
 
-`notebooks/modeling.ipynb` walks through the same preprocessing and compares multiple classifiers (for example Random Forest, Decision Tree, logistic regression, XGBoost) in one place.
+`notebooks/v2.ipynb` is the current main modeling notebook and compares multiple classifiers (Random Forest, Decision Tree, logistic regression, XGBoost) with time-aware evaluation flow.
 
 ## Project layout
 

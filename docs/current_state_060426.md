@@ -19,16 +19,16 @@ All production-style scripts live in `src/models/` and share `src/training_commo
 - `LogisticRegression` (linear baseline, `max_iter=1000`, balanced classes)
 - `XGBoostClassifier` (in notebook workflows)
 
-## Current baseline performance (modeling notebook)
+## Current baseline performance (`v2.ipynb`)
 
-From `notebooks/modeling.ipynb` (current reference run):
+From `notebooks/v2.ipynb` final held-out test results:
 
-| Model | Validation | Test |
-|---|---:|---:|
-| RandomForestClassifier | 0.5519 | 0.5974 |
-| DecisionTreeClassifier | 0.5162 | 0.5422 |
-| LogisticRegression | 0.5584 | 0.5714 |
-| XGBoostClassifier | 0.5649 | 0.5649 |
+| Model | Final test accuracy |
+|---|---:|
+| RandomForestClassifier | 0.4748 |
+| XGBoostClassifier | 0.4564 |
+| LogisticRegression | 0.4060 |
+| DecisionTreeClassifier | 0.3326 |
 
 ## Scenario comparison now tracked
 
@@ -36,7 +36,7 @@ From `notebooks/modeling.ipynb` (current reference run):
 
 - `Full` (additional data on, group-leakage-safe split, cross-validation on)
 - `With leakage true`
-- `Cross validation off` (aligned to modeling notebook baseline)
+- `Cross validation off` (aligned to `v2.ipynb` held-out baseline)
 - `Additional data off`
 
 The notebook includes bar charts and delta tables to make scenario effects easier to read than text output.

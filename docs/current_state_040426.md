@@ -33,13 +33,13 @@ Data flows in one direction:
 - End-to-end training scripts that share `load_engineered_dataset`, `select_feature_columns`, `split_features_and_target`, and `print_model_report`.
 - Rich feature layer: rolling form, cup fatigue, table position, H2H, multi-source context stats, style-weighted rolling xG/xGA adjustments, referee and motivation signals.
 - Group-based splitting to reduce leakage from duplicate rows per match.
-- exploratory notebook `notebooks/modeling.ipynb` for multi-model comparison and reporting.
+- exploratory notebook workflow (superseded by `notebooks/v2.ipynb`) for multi-model comparison and reporting.
 
 What is not implemented or only lightly covered: automated tests, CLI flags, configuration via environment variables, logging to files, hyperparameter search, calibration of predicted probabilities, and strict temporal backtesting (splits are group-stratified but not necessarily rolling by season).
 
 ## Results (from the checked-in notebook run)
 
-The following figures come from executed output embedded in `notebooks/modeling.ipynb` (same feature pipeline, group split, and comparable preprocessing). Slight differences will appear if you change data files, seeds, or library versions.
+The following figures came from an earlier notebook run and are retained as historical context. For current reference, use `notebooks/v2.ipynb` and `docs/current_state_060426.md`.
 
 | Model | Validation accuracy | Test accuracy |
 |--------|---------------------|---------------|
