@@ -1,0 +1,17 @@
+scenario,model,validation_accuracy,test_accuracy,cv_accuracy,additional_data,leakage,cross_validation
+Additional data off,RandomForestClassifier,0.6983,0.7586,,False,False,False
+Additional data off,XGBoostClassifier,0.6724,0.7069,,False,False,False
+Additional data off,LogisticRegression,0.6552,0.6897,,False,False,False
+Additional data off,DecisionTreeClassifier,0.5948,0.6034,,False,False,False
+Cross validation off,RandomForestClassifier,0.5471,0.5812,,True,False,False
+Cross validation off,LogisticRegression,0.5568,0.5714,,True,False,False
+Cross validation off,XGBoostClassifier,0.5584,0.5649,,True,False,False
+Cross validation off,DecisionTreeClassifier,0.5162,0.5422,,True,False,False
+Full,RandomForestClassifier,0.5471,0.5812,0.5842,True,False,True
+Full,LogisticRegression,0.5568,0.5714,0.5694,True,False,True
+Full,XGBoostClassifier,0.5584,0.5649,0.5755,True,False,True
+Full,DecisionTreeClassifier,0.5162,0.5422,0.491,True,False,True
+With leakage true,LogisticRegression,0.5561,0.5812,,True,True,False
+With leakage true,XGBoostClassifier,0.5512,0.5747,,True,True,False
+With leakage true,RandomForestClassifier,0.5675,0.5682,,True,True,False
+With leakage true,DecisionTreeClassifier,0.4976,0.5422,,True,True,False
